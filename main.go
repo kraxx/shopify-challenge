@@ -3,138 +3,83 @@ package main
 import (
 	"./models"
 	"./seed"
-	"encoding/json"
+	// "encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	// "github.com/kr/pretty"
 	"log"
 	"net/http"
 )
 
 const (
-	PORT = "8080"
+	PORT    = "8080"
+	DB_TYPE = "sqlite3"
+	DB_PATH = "foo.db"
 )
 
 var db *gorm.DB
 var err error
-
-func GetShops(w http.ResponseWriter, r *http.Request) {
-	var shops []models.Shop
-	db.Find(&shops)
-	json.NewEncoder(w).Encode(&shops)
-}
-func GetShopById(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	var shop models.Shop
-	var products []models.Product
-	var orders []models.Order
-	db.First(&shop, params["id"])
-	db.Model(&shop).Related(&products)
-	db.Model(&shop).Related(&orders)
-	shop.Products = products
-	shop.Orders = orders
-
-	/*
-
-		var shopRef models.Shop
-		for _, product := range products {
-			db.First(&shopRef, product.ShopID)
-			product.Shop = shopRef
-			log.Println(shopRef)
-			log.Println(product.ID)
-			log.Println(product.Shop)
-		}
-		log.Println("squee")
-		for _, order := range orders {
-			// db.First(&shopRef, order.ShopID)
-			order.Shop = shop
-			log.Println(shop)
-			log.Println(order.Shop)
-		}
-		log.Println("ruh roh")
-		for _, product := range shop.Products {
-			log.Println(product.Shop)
-		}
-		log.Println("fadsddddroh")
-		for _, V := range shop.Orders {
-			log.Println(V.Shop)
-		}
-
-	*/
-
-	json.NewEncoder(w).Encode(&shop)
-}
-func CreateShop(w http.ResponseWriter, r *http.Request) {
-	var shop models.Shop
-	json.NewDecoder(r.Body).Decode(&shop)
-	db.Create(&shop)
-	json.NewEncoder(w).Encode(&shop)
-}
-func DeleteShopById(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	var shop models.Shop
-	db.First(&shop, params["id"])
-	db.Delete(&shop)
-
-	GetShops(w, r)
-}
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Waaaaaaaaaaaaaaaah itz a shop")
 }
 
 func ReseedHandler(w http.ResponseWriter, r *http.Request) {
-	// fmt.Fprintf(w, "Waaaaaaaaaaaaaaaah itz a shop")
 	seed.DropAndReseedData(db)
 }
 
 func GetRootFields() graphql.Fields {
 	return graphql.Fields{
-		"shop": GetShopQuery(),
+		"shop":       GetShopQuery(),
+		"createShop": GetCreateShopMutation(),
+	}
+}
+func GetCreateShopMutation() *graphql.Field {
+	return &graphql.Field{
+		Type:        ShopType,
+		Description: "Create new shop",
+		Args: graphql.FieldConfigArgument{
+			"name": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+		},
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			shop := models.Shop{
+				Name: params.Args["name"].(string),
+			}
+			db.Create(&shop)
+			return shop, nil
+		},
 	}
 }
 func GetShopQuery() *graphql.Field {
 	return &graphql.Field{
-		Type: graphql.NewList(ShopType),
+		Type:        graphql.NewList(ShopType),
+		Description: "Queries for Shop stuff",
+		Args: graphql.FieldConfigArgument{
+			"id":   &graphql.ArgumentConfig{Type: graphql.ID},
+			"name": &graphql.ArgumentConfig{Type: graphql.String},
+		},
 		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 			var shops []models.Shop
-
-			// log.Printf("%+v\n\n", params.Source)
-			// log.Printf("%# v", pretty.Formatter(params.Source)) //It will print all struct details
-			// ... Implement the way you want to obtain your data here.
-			db.Find(&shops) // MAYBE
-			//
-
+			db.Where(params.Args).Find(&shops)
 			return shops, nil
 		},
 	}
 }
 
 var ShopType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Shop",
+	Name:        "Shop",
+	Description: "Shops have Products and Orders",
 	Fields: graphql.Fields{
-		"id":   &graphql.Field{Type: graphql.Int},
+		"id":   &graphql.Field{Type: graphql.NewNonNull(graphql.ID)},
 		"name": &graphql.Field{Type: graphql.String},
 		"products": &graphql.Field{
 			Type: graphql.NewList(ProductType),
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				var products []models.Product
-
-				// userID := params.Source.(User).ID
-				// Implement logic to retrieve user associated roles from user id here.
-
-				// var shop models.Shop
-				// shopID := params.Source.(models.Shop).ID
-				// log.Println(params.Source.(models.Shop))
-				// db.First(&shop, shopID)
-				// db.Model(&shop).Related(&products)
-				//
 				db.Model(params.Source.(models.Shop)).Related(&products)
-
 				return products, nil
 			},
 		},
@@ -149,10 +94,11 @@ var ShopType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 var ProductType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Product",
+	Name:        "Product",
+	Description: "Products have LineItems",
 	Fields: graphql.Fields{
-		"id":       &graphql.Field{Type: graphql.Int},
-		"shopId":   &graphql.Field{Type: graphql.Int},
+		"id":       &graphql.Field{Type: graphql.NewNonNull(graphql.ID)},
+		"shopId":   &graphql.Field{Type: graphql.NewNonNull(graphql.ID)},
 		"name":     &graphql.Field{Type: graphql.String},
 		"value":    &graphql.Field{Type: graphql.Int},
 		"quantity": &graphql.Field{Type: graphql.Int},
@@ -167,10 +113,11 @@ var ProductType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 var OrderType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Order",
+	Name:        "Order",
+	Description: "Orders have LineItems.",
 	Fields: graphql.Fields{
-		"id":     &graphql.Field{Type: graphql.Int},
-		"shopId": &graphql.Field{Type: graphql.Int},
+		"id":     &graphql.Field{Type: graphql.NewNonNull(graphql.ID)},
+		"shopId": &graphql.Field{Type: graphql.NewNonNull(graphql.ID)},
 		"lineItems": &graphql.Field{
 			Type: graphql.NewList(LineItemType),
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
@@ -196,11 +143,12 @@ var OrderType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 var LineItemType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "LineItem",
+	Name:        "LineItem",
+	Description: "A list item in an order. Product type and amount",
 	Fields: graphql.Fields{
-		"id":        &graphql.Field{Type: graphql.Int},
-		"productId": &graphql.Field{Type: graphql.Int},
-		"orderId":   &graphql.Field{Type: graphql.Int},
+		"id":        &graphql.Field{Type: graphql.NewNonNull(graphql.ID)},
+		"productId": &graphql.Field{Type: graphql.NewNonNull(graphql.ID)},
+		"orderId":   &graphql.Field{Type: graphql.NewNonNull(graphql.ID)},
 		"quantity":  &graphql.Field{Type: graphql.Int},
 		"value": &graphql.Field{
 			Type: graphql.Int,
@@ -215,15 +163,14 @@ var LineItemType = graphql.NewObject(graphql.ObjectConfig{
 })
 
 func main() {
-	log.Print("Here we go!")
-	db, err = gorm.Open("sqlite3", "foo.db")
+	db, err = gorm.Open(DB_TYPE, DB_PATH)
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
-	// db.AutoMigrate(&Shop{}, &Product{}, &Order{}, &ListItem{})
+	db.AutoMigrate(&models.Shop{}, &models.Product{}, &models.Order{}, &models.LineItem{})
 
-	seed.DropAndReseedData(db)
+	// seed.DropAndReseedData(db)
 
 	schemaConfig := graphql.SchemaConfig{
 		Query: graphql.NewObject(graphql.ObjectConfig{
@@ -248,13 +195,8 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", IndexHandler).Methods("GET")
 	router.HandleFunc("/reseed", ReseedHandler).Methods("GET")
-	// router.HandleFunc("/shop", GetShops).Methods("GET")
-	// router.HandleFunc("/shop/{id}", GetShopById).Methods("GET")
-	// router.HandleFunc("/shop", CreateShop).Methods("POST")
-	// router.HandleFunc("/shop/{id}", DeleteShopById).Methods("DELETE")
 	router.Handle("/graphql", GraphqlHandler)
 
+	log.Println("Starting up service...")
 	log.Fatal(http.ListenAndServe(":"+PORT, router))
-
-	// http.ListenAndServe(":"+PORT, router)
 }
