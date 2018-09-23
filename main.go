@@ -1,7 +1,6 @@
 package main
 
 import (
-	// myDB "./db"
 	"./models"
 	"./seed"
 	"fmt"
