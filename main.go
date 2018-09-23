@@ -18,18 +18,15 @@ const (
 var db *gorm.DB
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Waaaaaaaaaaaaaaaah itz a shop")
+	fmt.Fprintf(w, "It's a shopping API!")
 }
 
 func ReseedHandler(w http.ResponseWriter, r *http.Request) {
 	seed.DropAndReseedData(db)
 }
 
-func init() {
-	db = models.DB
-}
-
 func main() {
+	db = models.DB
 	defer db.Close()
 
 	router := mux.NewRouter()
