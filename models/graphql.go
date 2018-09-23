@@ -20,34 +20,39 @@ func GetRootFields() graphql.Fields {
 		"deleteShop": DeleteShopMutation(),
 	}
 }
-func UpdateShopMutation() *graphql.Field {
+func CustomGetQuery(objectType graphql.Output, objectArgs graphql.FieldConfigArgument, object interface{}) *graphql.Field {
 	return &graphql.Field{
-		Type:        ShopType,
-		Description: "Update existing shop by ID",
-		Args: graphql.FieldConfigArgument{
-			"id":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
-			"name": &graphql.ArgumentConfig{Type: graphql.String},
-		},
+		Type: graphql.NewList(objectType),
+		Args: objectArgs,
 		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-			// var shop Shop
-			return UpdateGeneric(params.Args, &Shop{})
-			// return shop, nil
+			return GetDatabaseEntry(params.Args, object)
 		},
 	}
 }
-func DeleteShopMutation() *graphql.Field {
+func CustomUpdateMutation(objectType graphql.Output, objectArgs graphql.FieldConfigArgument, object interface{}) *graphql.Field {
 	return &graphql.Field{
-		Type:        ShopType,
-		Description: "Delete existing shop",
-		Args: graphql.FieldConfigArgument{
-			"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
-		},
+		Type: objectType,
+		Args: objectArgs,
 		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-			// DeleteGeneric(params.Args, &Shop{})
-			// return Shop{}, nil
-			return DeleteGeneric(params.Args, &Shop{})
+			return UpdateDatabaseEntry(params.Args, object)
 		},
 	}
+}
+func CustomDeleteMutation(objectType graphql.Output, objectArgs graphql.FieldConfigArgument, object interface{}) *graphql.Field {
+	return &graphql.Field{
+		Type: objectType,
+		Args: objectArgs,
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			return DeleteDatabaseEntry(params.Args, object)
+		},
+	}
+}
+func GetShopQuery() *graphql.Field {
+	args := graphql.FieldConfigArgument{
+		"id":   &graphql.ArgumentConfig{Type: graphql.ID},
+		"name": &graphql.ArgumentConfig{Type: graphql.String},
+	}
+	return CustomGetQuery(ShopType, args, &[]Shop{})
 }
 func CreateShopMutation() *graphql.Field {
 	return &graphql.Field{
@@ -60,49 +65,80 @@ func CreateShopMutation() *graphql.Field {
 			shop := Shop{
 				Name: params.Args["name"].(string),
 			}
-			CreateGeneric(&shop)
+			CreateDatabaseEntry(&shop)
 			return shop, nil
 		},
 	}
 }
-func GetShopQuery() *graphql.Field {
+
+func UpdateShopMutation() *graphql.Field {
 	return &graphql.Field{
-		Type:        graphql.NewList(ShopType),
-		Description: "Fetch existing shop",
+		Type:        ShopType,
+		Description: "Update existing shop by ID",
 		Args: graphql.FieldConfigArgument{
-			"id":   &graphql.ArgumentConfig{Type: graphql.ID},
+			"id":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
 			"name": &graphql.ArgumentConfig{Type: graphql.String},
 		},
 		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-			// var shops []Shop
-			// GetGeneric(params.Args, &shops)
-			// return shops, nil
-			return GetGeneric(params.Args, &[]Shop{})
+
+			// Have to instantiate outside DB call to properly return children
+
+			// return UpdateDatabaseEntry(params.Args, &Shop{})
+
+			// var shop Shop
+			// return UpdateDatabaseEntry(params.Args, &shop)
+
+			var entry Shop
+			DB.First(&entry, params.Args["id"]).Updates(params.Args)
+			return entry, nil
 		},
 	}
+	// args := graphql.FieldConfigArgument{
+	// 	"id":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
+	// 	"name": &graphql.ArgumentConfig{Type: graphql.String},
+	// }
+	// return CustomUpdateMutation(ShopType, args, &Shop{})
+}
+func DeleteShopMutation() *graphql.Field {
+	return &graphql.Field{
+		Type:        ShopType,
+		Description: "Delete existing shop",
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
+		},
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			// return DeleteDatabaseEntry(params.Args, &Shop{})
+
+			var entry Shop
+			DB.Where(params.Args).Delete(&entry)
+			return entry, nil
+		},
+	}
+	// args := graphql.FieldConfigArgument{
+	// 	"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.ID)},
+	// }
+	// return CustomDeleteMutation(ShopType, args, &Shop{})
 }
 
-// func GetGeneric(args map[string]interface{}, entry interface{}) {
-// 	DB.Where(args).Find(entry)
-// }
-func GetGeneric(args map[string]interface{}, entry interface{}) (interface{}, error) {
+func GetDatabaseEntry(args map[string]interface{}, entry interface{}) (interface{}, error) {
 	DB.Where(args).Find(entry)
 	return entry, nil
 }
-func GetChildrenGeneric(parent, children interface{}) (interface{}, error) {
-	DB.Model(parent).Related(children)
-	return children, nil
-}
-func CreateGeneric(entry interface{}) {
+func CreateDatabaseEntry(entry interface{}) {
 	DB.Create(entry)
 }
-func UpdateGeneric(args map[string]interface{}, entry interface{}) (interface{}, error) {
+func UpdateDatabaseEntry(args map[string]interface{}, entry interface{}) (interface{}, error) {
 	DB.First(entry, args["id"]).Updates(args)
 	return entry, nil
 }
-func DeleteGeneric(args map[string]interface{}, entry interface{}) (interface{}, error) {
+func DeleteDatabaseEntry(args map[string]interface{}, entry interface{}) (interface{}, error) {
 	DB.Where(args).Delete(entry)
 	return entry, nil
+}
+
+func GetChildrenGeneric(parent, children interface{}) (interface{}, error) {
+	DB.Model(parent).Related(children)
+	return children, nil
 }
 
 var ShopType = graphql.NewObject(graphql.ObjectConfig{
@@ -114,19 +150,12 @@ var ShopType = graphql.NewObject(graphql.ObjectConfig{
 		"products": &graphql.Field{
 			Type: graphql.NewList(ProductType),
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				// var products []Product
-				// DB.Model(params.Source.(Shop)).Related(&products)
-				// GetChildrenGeneric(params.Source.(Shop), &products)
-				// return products, nil
 				return GetChildrenGeneric(params.Source.(Shop), &[]Product{})
 			},
 		},
 		"orders": &graphql.Field{
 			Type: graphql.NewList(OrderType),
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				// var orders []Order
-				// DB.Model(params.Source.(Shop)).Related(&orders)
-				// return orders, nil
 				return GetChildrenGeneric(params.Source.(Shop), &[]Order{})
 			},
 		},
@@ -144,9 +173,10 @@ var ProductType = graphql.NewObject(graphql.ObjectConfig{
 		"lineItems": &graphql.Field{
 			Type: graphql.NewList(LineItemType),
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				var lineItems []LineItem
-				DB.Model(params.Source.(Product)).Related(&lineItems)
-				return lineItems, nil
+				// var lineItems []LineItem
+				// DB.Model(params.Source.(Product)).Related(&lineItems)
+				// return lineItems, nil
+				return GetChildrenGeneric(params.Source.(Product), &[]LineItem{})
 			},
 		},
 	},
@@ -160,23 +190,23 @@ var OrderType = graphql.NewObject(graphql.ObjectConfig{
 		"lineItems": &graphql.Field{
 			Type: graphql.NewList(LineItemType),
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				var lineItems []LineItem
-				DB.Model(params.Source.(Order)).Related(&lineItems)
-				return lineItems, nil
+				// var lineItems []LineItem
+				// DB.Model(params.Source.(Order)).Related(&lineItems)
+				// return lineItems, nil
+				return GetChildrenGeneric(params.Source.(Order), &[]LineItem{})
 			},
 		},
 		"value": &graphql.Field{
 			Type: graphql.Int,
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				var lineItems []LineItem
-				var sum int
-				DB.Model(params.Source.(Order)).Related(&lineItems)
-				for _, item := range lineItems {
-					var product Product
-					DB.First(&product, item.ProductID)
-					sum += product.Value * item.Quantity
-				}
-				return sum, nil
+				// var lineItems []LineItem
+				// var sum int
+				// DB.Model(params.Source.(Order)).Related(&lineItems)
+				// for _, item := range lineItems {
+				// 	sum += GetTotalLineItemPrice(item.ProductID, item.Quantity)
+				// }
+				// return sum, nil
+				return GetTotalOrderPrice(params.Source.(Order)), nil
 			},
 		},
 	},
@@ -192,13 +222,30 @@ var LineItemType = graphql.NewObject(graphql.ObjectConfig{
 		"value": &graphql.Field{
 			Type: graphql.Int,
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				var product Product
-				DB.First(&product, params.Source.(LineItem).ProductID)
-				return product.Value * params.Source.(LineItem).Quantity, nil
+				// var product Product
+				// DB.First(&product, params.Source.(LineItem).ProductID)
+				// return product.Value * params.Source.(LineItem).Quantity, nil
+				return GetTotalLineItemPrice(params.Source.(LineItem).ProductID, params.Source.(LineItem).Quantity), nil
 			},
 		},
 	},
 })
+
+func GetTotalOrderPrice(order Order) int {
+	var lineItems []LineItem
+	var sum int
+	DB.Model(order).Related(&lineItems)
+	for _, item := range lineItems {
+		sum += GetTotalLineItemPrice(item.ProductID, item.Quantity)
+	}
+	return sum
+}
+
+func GetTotalLineItemPrice(id uint, quantity int) int {
+	var product Product
+	DB.First(&product, id)
+	return product.Value * quantity
+}
 
 var GraphqlHandler http.Handler
 
