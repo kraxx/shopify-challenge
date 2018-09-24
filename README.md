@@ -63,12 +63,17 @@ createLineItem(product_id,order_id,quantity): Again, all fields mandatory.
 updateLineItem(id,product_id,order_id,quantity)
 deleteLineItem(id)
 ```
-Now, all these queries/mutations must be followed by a return schema. For example:
+The CRUD "methods" need to be verbose and in paretheses '( )', where you specify parameter key and value. For example:
+```
+{product(name:"Wizard Hat"){id,shop_id,name}}
+```
+Now, all these queries/mutations must be followed by a return schema in more curly braces '{ }'. For example:
 ```
 {shop{id,name}}
-{updateShop(id:2,name:"Hallelujah"}{id,name,products{id,shop_id,name,value}}
+{updateShop(id:2,name:"Hallelujah"){id,name,products{id,shop_id,name,value}}
 {deleteOrder(id:4){id}}
 {createOrder(shop_id:5){id,shop_id}}
+{order(id:3){value, list_item{quantity,value}}}
 {lineItem{id,value,order_id,product_id}}
 ```
 Here's what a query to the entire database looks like:
