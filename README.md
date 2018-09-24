@@ -80,7 +80,7 @@ Here's what a query to the entire database looks like:
 ```
 https://its-a-shop.herokuapp.com/graphql?query={shop{id,name,products{id,shop_id,name,value,quantity,line_items{id,product_id,order_id,quantity}}orders{id,value,line_items{id,product_id,order_id,value}}}}
 ```
-### I didn't do a great job with naming consistency, so pay attention to the differences in the singular camelCase methods and the plural snake_case schema returns. Sorry!.
+### I didn't do a great job with naming consistency, so pay attention to the differences in the singular camelCase methods and the plural snake_case schema returns. Sorry!
 
 Play around, and if you delete too much and don't want to painstakingly recreate data, just hit the reseed endpoint:
 ```
@@ -88,4 +88,4 @@ https://its-a-shop.herokuapp.com/reseed
 ```
 and that should reseed the data back to the defaults I've provided.
 
-Now all of this has been written for GET queries, but POST queries are also supported. However, as I have not written the GraphQL implementation well, it's not really that much of an improved experience to be sending schemas as JSON bodies through POST. Sorry!
+Now all of this has been written for GET queries, but POST queries are also supported. However, as I have not written the GraphQL implementation well, it's not really that much of an improved experience to be sending schemas as JSON bodies through POST. Sorry again!
