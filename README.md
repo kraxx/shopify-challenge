@@ -34,7 +34,7 @@ order {
   value
   line_items{}
 }
-line_item {
+lineItem {
   id
   product_id
   order_id
