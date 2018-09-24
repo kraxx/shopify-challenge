@@ -4,6 +4,9 @@
 </head>
 <body>
   <h1>Shopping API</h1>
-  <h2>This API was written using GraphQL</h2>
-  <h5>Hit the /reseed endpoint if things go awry</h5>
+  <h2>This API implements GraphQL</h2>
+  <h3>Here's the full query string to get <strong>everything</strong> in our database:</h3>
+  <p>/graphql?query={shop{id,name,products{id,shop_id,name,value,quantity,line_items{id,product_id,order_id,quantity}}orders{id,value,line_items{id,product_id,order_id,value}}}}</p>
+  <h3>Hit the /reseed endpoint if things go awry (on success, you'll be redirected back here)</h3>
+  <h3>You might want to use a JSON prettifier such as <a target='_blank' href='https://jsonformatter.curiousconcept.com/'>https://jsonformatter.curiousconcept.com/</a></h3>
 </body>

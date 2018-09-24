@@ -5,10 +5,10 @@
 package models
 
 import (
-	"../db"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/jinzhu/gorm"
+	"github.com/kraxx/shopify-challenge/db"
 	"log"
 	"net/http"
 )

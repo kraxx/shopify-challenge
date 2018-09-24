@@ -5,19 +5,21 @@
 package main
 
 import (
-	"./models"
-	"./seed"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	"github.com/kraxx/shopify-challenge/models"
+	"github.com/kraxx/shopify-challenge/seed"
 	"log"
 	"net/http"
-	// "os"
+	_ "os"
 )
 
 const (
-	// PORT = os.Getenv["port"] || "8080"
+	// 	PORT = os.Getenv("APP_PORT")
 	PORT = "8080"
 )
+
+// var PORT string = os.Getenv("APP_PORT")
 
 // Reference to our DB struct
 var db *gorm.DB
@@ -41,6 +43,6 @@ func main() {
 	router.HandleFunc("/reseed", reseedHandler).Methods("GET")
 	router.Handle("/graphql", models.GraphqlHandler)
 
-	log.Println("Starting up shop API service...")
+	log.Printf("Starting up shop API service on port:%s\n", PORT)
 	log.Fatal(http.ListenAndServe(":"+PORT, router))
 }

@@ -6,8 +6,8 @@
 package seed
 
 import (
-	"../models"
 	"github.com/jinzhu/gorm"
+	"github.com/kraxx/shopify-challenge/models"
 )
 
 var shops = []models.Shop{
