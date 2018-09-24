@@ -44,7 +44,7 @@ func main() {
 	router.Handle("/graphql", models.GraphqlHandler)
 
 	port := os.Getenv("PORT")
-	if port == nil {
+	if port == "" {
 		port = PORT
 	}
 
