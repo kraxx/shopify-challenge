@@ -1,0 +1,94 @@
+{
+	"ImportPath": "github.com/kraxx/shopify-challenge",
+	"GoVersion": "go1.11",
+	"GodepVersion": "v80",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Comment": "v1.6.2-3-gcb46983",
+			"Rev": "cb4698366aa625048f3b815af6a0dea8aef9280a"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/gqlerrors",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/ast",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/kinds",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/lexer",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/location",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/parser",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/printer",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/source",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/typeInfo",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/visitor",
+			"Comment": "v0.7.6-22-gcc8e9a9",
+			"Rev": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/handler",
+			"Comment": "v0.2.1-12-g59006c0",
+			"Rev": "59006c0464d5638788d7b0051ea5c959e0d84253"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/gorm",
+			"Comment": "v1.9.1-30-g5be9bd3",
+			"Rev": "5be9bd34135805e0332b993378864b159784d8a8"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/gorm/dialects/sqlite",
+			"Comment": "v1.9.1-30-g5be9bd3",
+			"Rev": "5be9bd34135805e0332b993378864b159784d8a8"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/inflection",
+			"Rev": "04140366298a54a039076d798123ffa108fff46c"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-sqlite3",
+			"Comment": "v1.9.0-18-g6de94b0",
+			"Rev": "6de94b0b99071c779a0a8d4072b65d95c42c12d6"
+		}
+	]
+}
