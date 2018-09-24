@@ -3,7 +3,6 @@ package main
 import (
 	"./models"
 	"./seed"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"log"
@@ -16,10 +15,6 @@ const (
 
 var db *gorm.DB
 
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "It's a shopping API!")
-}
-
 func ReseedHandler(w http.ResponseWriter, r *http.Request) {
 	seed.DropAndReseedData(db)
 }
@@ -29,7 +24,7 @@ func main() {
 	defer db.Close()
 
 	router := mux.NewRouter()
-	router.HandleFunc("/", IndexHandler).Methods("GET")
+	router.Handle("/", http.FileServer(http.Dir("./static"))).Methods("GET")
 	router.HandleFunc("/reseed", ReseedHandler).Methods("GET")
 	router.Handle("/graphql", models.GraphqlHandler)
 

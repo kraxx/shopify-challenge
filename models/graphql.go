@@ -11,25 +11,25 @@ import (
 
 var DB *gorm.DB
 
-func GetRootFields() graphql.Fields {
-	return graphql.Fields{
-		"shop":           GetShopQuery(),
-		"createShop":     CreateShopMutation(),
-		"updateShop":     UpdateShopMutation(),
-		"deleteShop":     DeleteShopMutation(),
-		"product":        GetProductQuery(),
-		"createProduct":  CreateProductMutation(),
-		"updateProduct":  UpdateProductMutation(),
-		"deleteProduct":  DeleteProductMutation(),
-		"order":          GetOrderQuery(),
-		"createOrder":    CreateOrderMutation(),
-		"updateOrder":    UpdateOrderMutation(),
-		"deleteOrder":    DeleteOrderMutation(),
-		"lineItem":       GetLineItemQuery(),
-		"createLineItem": CreateLineItemMutation(),
-		"updateLineItem": UpdateLineItemMutation(),
-		"deleteLineItem": DeleteLineItemMutation(),
-	}
+var GraphqlHandler http.Handler
+
+var GraphqlRootFields = graphql.Fields{
+	"shop":           GetShopQuery(),
+	"createShop":     CreateShopMutation(),
+	"updateShop":     UpdateShopMutation(),
+	"deleteShop":     DeleteShopMutation(),
+	"product":        GetProductQuery(),
+	"createProduct":  CreateProductMutation(),
+	"updateProduct":  UpdateProductMutation(),
+	"deleteProduct":  DeleteProductMutation(),
+	"order":          GetOrderQuery(),
+	"createOrder":    CreateOrderMutation(),
+	"updateOrder":    UpdateOrderMutation(),
+	"deleteOrder":    DeleteOrderMutation(),
+	"lineItem":       GetLineItemQuery(),
+	"createLineItem": CreateLineItemMutation(),
+	"updateLineItem": UpdateLineItemMutation(),
+	"deleteLineItem": DeleteLineItemMutation(),
 }
 
 // Abstracted CRUD layers. Will require additional creative abstractions for a generic Create wrapper.
@@ -121,8 +121,20 @@ func DeleteShopMutation() *graphql.Field {
 			"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
 		},
 		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-			// return DeleteDatabaseEntry(params.Args, &Shop{})
 
+			// Delete all children of products first
+			var products []Product
+			args := map[string]interface{}{"shop_id": params.Args["id"]}
+			DB.Where(args).Find(&products)
+			for _, product := range products {
+				productArgs := map[string]interface{}{"product_id": product.ID}
+				DeleteDatabaseEntry(productArgs, &LineItem{})
+			}
+			// Delete child products and orders
+			DeleteDatabaseEntry(args, &Product{})
+			DeleteDatabaseEntry(args, &Order{})
+
+			// Delete the shop
 			var shop Shop
 			DB.Where(params.Args).Delete(&shop)
 			return shop, nil
@@ -192,6 +204,11 @@ func DeleteProductMutation() *graphql.Field {
 			"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
 		},
 		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+
+			// Delete children
+			args := map[string]interface{}{"product_id": params.Args["id"]}
+			DeleteDatabaseEntry(args, &LineItem{})
+
 			var product Product
 			DB.Where(params.Args).Delete(&product)
 			return product, nil
@@ -245,6 +262,11 @@ func DeleteOrderMutation() *graphql.Field {
 			"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
 		},
 		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+
+			// Delete children
+			args := map[string]interface{}{"order_id": params.Args["id"]}
+			DeleteDatabaseEntry(args, &LineItem{})
+
 			var order Order
 			DB.Where(params.Args).Delete(&order)
 			return order, nil
@@ -330,7 +352,7 @@ func GetChildrenGeneric(parent, children interface{}) (interface{}, error) {
 	DB.Model(parent).Related(children)
 	return children, nil
 }
-func GetTotalLineItemPrice(id int, quantity int) int {
+func GetTotalLineItemPrice(id, quantity int) int {
 	var product Product
 	DB.First(&product, id)
 	return product.Value * quantity
@@ -347,7 +369,6 @@ func GetTotalOrderPrice(order Order) int {
 
 // Set the database models to our database struct.
 // Set the graphQL schemas, and return the handler for use with our graphQL endpoint.
-var GraphqlHandler http.Handler
 
 func init() {
 	DB = db.DB
@@ -356,11 +377,11 @@ func init() {
 	schemaConfig := graphql.SchemaConfig{
 		Query: graphql.NewObject(graphql.ObjectConfig{
 			Name:   "RootQuery",
-			Fields: GetRootFields(),
+			Fields: GraphqlRootFields,
 		}),
 		Mutation: graphql.NewObject(graphql.ObjectConfig{
 			Name:   "RootMutation",
-			Fields: GetRootFields(),
+			Fields: GraphqlRootFields,
 		}),
 	}
 	schema, err := graphql.NewSchema(schemaConfig)

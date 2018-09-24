@@ -5,50 +5,93 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-func SeedData(db *gorm.DB) {
-	shop1 := models.Shop{Name: "Wacky Wizardry"}
-	shop2 := models.Shop{Name: "Fancy Frills"}
-	shop3 := models.Shop{Name: "Thrasher Thrills"}
-	shop4 := models.Shop{Name: "Doug's Dirt Shop"}
-	shop5 := models.Shop{Name: "Smiles For Kyle"}
-	product1_1 := models.Product{ShopID: 1, Name: "Wooden Rod", Value: 1000, Quantity: 24}
-	product1_2 := models.Product{ShopID: 1, Name: "Wizard Hat", Value: 2500, Quantity: 21}
-	product1_3 := models.Product{ShopID: 1, Name: "Pure Magic", Value: 9999, Quantity: 2}
-	product2_1 := models.Product{ShopID: 2, Name: "Thick Dress", Value: 100, Quantity: 56}
-	product2_2 := models.Product{ShopID: 2, Name: "Thin Dress", Value: 20, Quantity: 256}
-	product3_1 := models.Product{ShopID: 3, Name: "Gun", Value: 10000, Quantity: 1}
-	product3_2 := models.Product{ShopID: 3, Name: "Fireworks", Value: 100, Quantity: 10}
-	product3_3 := models.Product{ShopID: 3, Name: "A bomb", Value: 900000, Quantity: 1}
-	product4_1 := models.Product{ShopID: 4, Name: "Fine soil", Value: 10, Quantity: 1029}
-	product4_2 := models.Product{ShopID: 4, Name: "Coarse soil", Value: 13, Quantity: 10129}
-	product4_3 := models.Product{ShopID: 4, Name: "Wet soil", Value: 60, Quantity: 102}
-	product4_4 := models.Product{ShopID: 4, Name: "Dry soil", Value: 13, Quantity: 1022219}
-	product5_1 := models.Product{ShopID: 5, Name: "One wide smile", Value: 1, Quantity: 111111}
+var shops = []models.Shop{
+	models.Shop{Name: "Wacky Wizardry"},
+	models.Shop{Name: "Fancy Frills"},
+	models.Shop{Name: "Thrasher Thrills"},
+	models.Shop{Name: "Doug's Dirt Shop"},
+	models.Shop{Name: "Smiles For Kyle"},
+}
 
-	order1_1 := models.Order{ShopID: 1}
-	lineItem1_1 := models.LineItem{OrderID: 1, ProductID: 1, Quantity: 2}
-	lineItem1_2 := models.LineItem{OrderID: 1, ProductID: 2, Quantity: 20}
-	db.Create(&shop1)
-	db.Create(&shop2)
-	db.Create(&shop3)
-	db.Create(&shop4)
-	db.Create(&shop5)
-	db.Create(&product1_1)
-	db.Create(&product1_2)
-	db.Create(&product1_3)
-	db.Create(&product2_1)
-	db.Create(&product2_2)
-	db.Create(&product3_1)
-	db.Create(&product3_2)
-	db.Create(&product3_3)
-	db.Create(&product4_1)
-	db.Create(&product4_2)
-	db.Create(&product4_3)
-	db.Create(&product4_4)
-	db.Create(&product5_1)
-	db.Create(&order1_1)
-	db.Create(&lineItem1_1)
-	db.Create(&lineItem1_2)
+var products = []models.Product{
+	models.Product{ShopID: 1, Name: "Wooden Rod", Value: 1000, Quantity: 24},
+	models.Product{ShopID: 1, Name: "Wizard Hat", Value: 2500, Quantity: 21},
+	models.Product{ShopID: 1, Name: "Magic Book", Value: 9999, Quantity: 2},
+	models.Product{ShopID: 1, Name: "Cheap Rune", Value: 450, Quantity: 202},
+	models.Product{ShopID: 1, Name: "Flying Broom", Value: 860, Quantity: 14},
+	models.Product{ShopID: 2, Name: "Thick Dress", Value: 100, Quantity: 56},
+	models.Product{ShopID: 2, Name: "Cute Skirt", Value: 20, Quantity: 256},
+	models.Product{ShopID: 2, Name: "Night Gown", Value: 35, Quantity: 67},
+	models.Product{ShopID: 2, Name: "Generic Cloth", Value: 5, Quantity: 21},
+	models.Product{ShopID: 3, Name: "Razor", Value: 7, Quantity: 601},
+	models.Product{ShopID: 3, Name: "Fireworks", Value: 100, Quantity: 43},
+	models.Product{ShopID: 3, Name: "Lazer Beams", Value: 10000, Quantity: 1000},
+	models.Product{ShopID: 3, Name: "A bomb", Value: 900000, Quantity: 1},
+	models.Product{ShopID: 4, Name: "Fine soil", Value: 10, Quantity: 501229},
+	models.Product{ShopID: 4, Name: "Coarse dirt", Value: 13, Quantity: 30129},
+	models.Product{ShopID: 4, Name: "Wet pile", Value: 60, Quantity: 28322},
+	models.Product{ShopID: 4, Name: "Dry dirt", Value: 13, Quantity: 7222219},
+	models.Product{ShopID: 5, Name: "One wide smile", Value: 1, Quantity: 111111},
+}
+
+var orders = []models.Order{
+	models.Order{ShopID: 1},
+	models.Order{ShopID: 1},
+	models.Order{ShopID: 1},
+	models.Order{ShopID: 2},
+	models.Order{ShopID: 2},
+	models.Order{ShopID: 2},
+	models.Order{ShopID: 3},
+	models.Order{ShopID: 3},
+	models.Order{ShopID: 4},
+	models.Order{ShopID: 5},
+}
+
+var lineItems = []models.LineItem{
+	models.LineItem{OrderID: 1, ProductID: 1, Quantity: 2},
+	models.LineItem{OrderID: 1, ProductID: 2, Quantity: 12},
+	models.LineItem{OrderID: 2, ProductID: 1, Quantity: 5},
+	models.LineItem{OrderID: 2, ProductID: 2, Quantity: 1},
+	models.LineItem{OrderID: 2, ProductID: 4, Quantity: 1},
+	models.LineItem{OrderID: 3, ProductID: 1, Quantity: 1},
+	models.LineItem{OrderID: 3, ProductID: 2, Quantity: 1},
+	models.LineItem{OrderID: 3, ProductID: 3, Quantity: 1},
+	models.LineItem{OrderID: 3, ProductID: 4, Quantity: 1},
+	models.LineItem{OrderID: 3, ProductID: 5, Quantity: 1},
+	models.LineItem{OrderID: 4, ProductID: 6, Quantity: 2},
+	models.LineItem{OrderID: 4, ProductID: 7, Quantity: 5},
+	models.LineItem{OrderID: 5, ProductID: 6, Quantity: 12},
+	models.LineItem{OrderID: 5, ProductID: 7, Quantity: 155},
+	models.LineItem{OrderID: 5, ProductID: 8, Quantity: 60},
+	models.LineItem{OrderID: 5, ProductID: 9, Quantity: 20},
+	models.LineItem{OrderID: 5, ProductID: 10, Quantity: 12},
+	models.LineItem{OrderID: 6, ProductID: 9, Quantity: 32},
+	models.LineItem{OrderID: 7, ProductID: 11, Quantity: 320},
+	models.LineItem{OrderID: 7, ProductID: 12, Quantity: 1},
+	models.LineItem{OrderID: 8, ProductID: 11, Quantity: 100},
+	models.LineItem{OrderID: 8, ProductID: 12, Quantity: 638},
+	models.LineItem{OrderID: 8, ProductID: 13, Quantity: 1},
+	models.LineItem{OrderID: 8, ProductID: 14, Quantity: 60},
+	models.LineItem{OrderID: 9, ProductID: 14, Quantity: 999},
+	models.LineItem{OrderID: 9, ProductID: 15, Quantity: 999},
+	models.LineItem{OrderID: 9, ProductID: 16, Quantity: 999},
+	models.LineItem{OrderID: 9, ProductID: 17, Quantity: 999},
+	models.LineItem{OrderID: 10, ProductID: 18, Quantity: 1},
+}
+
+func SeedData(db *gorm.DB) {
+	for _, shop := range shops {
+		db.Create(&shop)
+	}
+	for _, product := range products {
+		db.Create(&product)
+	}
+	for _, order := range orders {
+		db.Create(&order)
+	}
+	for _, lineItem := range lineItems {
+		db.Create(&lineItem)
+	}
 }
 
 func DropAndReseedData(db *gorm.DB) {
