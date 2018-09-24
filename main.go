@@ -11,7 +11,7 @@ import (
 	"github.com/kraxx/shopify-challenge/seed"
 	"log"
 	"net/http"
-	_ "os"
+	"os"
 )
 
 const (
@@ -43,6 +43,11 @@ func main() {
 	router.HandleFunc("/reseed", reseedHandler).Methods("GET")
 	router.Handle("/graphql", models.GraphqlHandler)
 
-	log.Printf("Starting up shop API service on port:%s\n", PORT)
+	port := os.Getenv("PORT")
+	if port == nil {
+		port = PORT
+	}
+
+	log.Printf("Starting up shop API service on port:%s\n", port)
 	log.Fatal(http.ListenAndServe(":"+PORT, router))
 }
