@@ -1,1 +1,1 @@
-web: make build && ./shop_api
+web: ./shop_api
