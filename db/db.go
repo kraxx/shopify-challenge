@@ -12,14 +12,9 @@ import (
 )
 
 const (
-	// 	DB_TYPE = os.Getenv("DB_TYPE")
-	// 	DB_PATH = os.Getenv("DB_PATH")
 	DB_TYPE = "sqlite3"
 	DB_PATH = "./db/shops.db"
 )
-
-// var DB_TYPE string = os.Getenv("DB_TYPE")
-// var DB_PATH string = os.Getenv("DB_PATH")
 
 var DB *gorm.DB
 

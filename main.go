@@ -14,12 +14,7 @@ import (
 	"os"
 )
 
-const (
-	// 	PORT = os.Getenv("APP_PORT")
-	PORT = "8080"
-)
-
-// var PORT string = os.Getenv("APP_PORT")
+const PORT = "8080"
 
 // Reference to our DB struct
 var db *gorm.DB
