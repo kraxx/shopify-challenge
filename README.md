@@ -73,13 +73,15 @@ Now, all these queries/mutations must be followed by a return schema in more cur
 {updateShop(id:2,name:"Hallelujah"){id,name,products{id,shop_id,name,value}}
 {deleteOrder(id:4){id}}
 {createOrder(shop_id:5){id,shop_id}}
-{order(id:3){value, list_item{quantity,value}}}
+{order(id:3){value, list_items{quantity,value}}}
 {lineItem{id,value,order_id,product_id}}
 ```
 Here's what a query to the entire database looks like:
 ```
 https://its-a-shop.herokuapp.com/graphql?query={shop{id,name,products{id,shop_id,name,value,quantity,line_items{id,product_id,order_id,quantity}}orders{id,value,line_items{id,product_id,order_id,value}}}}
 ```
+#### I didn't do a great job with consistency, so pay attention to the differences in the **singular camelCase methods** and the **plural snake_case schema returns**.
+
 Play around, and if you delete too much and don't want to painstakingly recreate data, just hit the reseed endpoint:
 ```
 https://its-a-shop.herokuapp.com/reseed
