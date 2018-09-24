@@ -49,5 +49,5 @@ func main() {
 	}
 
 	log.Printf("Starting up shop API service on port:%s\n", port)
-	log.Fatal(http.ListenAndServe(":"+PORT, router))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
