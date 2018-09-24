@@ -1,1 +1,1 @@
-web: ./bin/shop_api
+web: bin/shop_api
