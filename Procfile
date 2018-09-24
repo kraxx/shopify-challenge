@@ -1,1 +1,1 @@
-web: ./bin/shop_api
+worker: ./bin/shop_api
