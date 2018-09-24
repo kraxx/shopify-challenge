@@ -1,0 +1,1 @@
+web: make build && ./shop_api
