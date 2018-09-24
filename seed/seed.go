@@ -1,3 +1,8 @@
+/*
+** A demo needs sample data!
+** We include an option to reseed, if ever things get messy.
+ */
+
 package seed
 
 import (
@@ -26,12 +31,12 @@ var products = []models.Product{
 	models.Product{ShopID: 3, Name: "Razor", Value: 7, Quantity: 601},
 	models.Product{ShopID: 3, Name: "Fireworks", Value: 100, Quantity: 43},
 	models.Product{ShopID: 3, Name: "Lazer Beams", Value: 10000, Quantity: 1000},
-	models.Product{ShopID: 3, Name: "A bomb", Value: 900000, Quantity: 1},
-	models.Product{ShopID: 4, Name: "Fine soil", Value: 10, Quantity: 501229},
-	models.Product{ShopID: 4, Name: "Coarse dirt", Value: 13, Quantity: 30129},
-	models.Product{ShopID: 4, Name: "Wet pile", Value: 60, Quantity: 28322},
-	models.Product{ShopID: 4, Name: "Dry dirt", Value: 13, Quantity: 7222219},
-	models.Product{ShopID: 5, Name: "One wide smile", Value: 1, Quantity: 111111},
+	models.Product{ShopID: 3, Name: "A Bomb", Value: 900000, Quantity: 1},
+	models.Product{ShopID: 4, Name: "Fine Soil", Value: 10, Quantity: 501229},
+	models.Product{ShopID: 4, Name: "Coarse Dirt", Value: 13, Quantity: 30129},
+	models.Product{ShopID: 4, Name: "Wet Pile", Value: 60, Quantity: 28322},
+	models.Product{ShopID: 4, Name: "Dry Dirt", Value: 13, Quantity: 7222219},
+	models.Product{ShopID: 5, Name: "One Wide Smile", Value: 1, Quantity: 111111},
 }
 
 var orders = []models.Order{
@@ -72,10 +77,10 @@ var lineItems = []models.LineItem{
 	models.LineItem{OrderID: 8, ProductID: 12, Quantity: 638},
 	models.LineItem{OrderID: 8, ProductID: 13, Quantity: 1},
 	models.LineItem{OrderID: 8, ProductID: 14, Quantity: 60},
-	models.LineItem{OrderID: 9, ProductID: 14, Quantity: 999},
-	models.LineItem{OrderID: 9, ProductID: 15, Quantity: 999},
-	models.LineItem{OrderID: 9, ProductID: 16, Quantity: 999},
-	models.LineItem{OrderID: 9, ProductID: 17, Quantity: 999},
+	models.LineItem{OrderID: 9, ProductID: 14, Quantity: 9999},
+	models.LineItem{OrderID: 9, ProductID: 15, Quantity: 9999},
+	models.LineItem{OrderID: 9, ProductID: 16, Quantity: 9999},
+	models.LineItem{OrderID: 9, ProductID: 17, Quantity: 9999},
 	models.LineItem{OrderID: 10, ProductID: 18, Quantity: 1},
 }
 
