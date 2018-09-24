@@ -48,8 +48,8 @@ createShop(name): Creates a new shop with provided name (mandatory).
 updateShop(id,name): Updates shop with provided ID with new name.
 deleteShop(id): Deletes shop with given ID.
 
-product(id,name,shop_id,value,quantity)
-createProduct(shop_id,name,value,quantity): All fields mandatory
+product(id,name,shop_id,value,quantity): Same as above.
+createProduct(shop_id,name,value,quantity): All fields mandatory.
 updateProduct(id,shop_id,name,value,quantity): Can update whichever fields you want.
 deleteProduct(id)
 
@@ -67,9 +67,10 @@ The CRUD "methods" need to be verbose and in paretheses '( )', where you specify
 ```
 {product(name:"Wizard Hat"){id,shop_id,name}}
 ```
-Now, all these queries/mutations must be followed by a return schema in more curly braces '{ }'. For example:
+Now, all these queries/mutations must be followed by a return schema in more curly braces '{ }'. Examples:
 ```
 {shop{id,name}}
+{shop{id,name},product{shop_id,name,value,quantity}}
 {updateShop(id:2,name:"Hallelujah"){id,name,products{id,shop_id,name,value}}
 {deleteOrder(id:4){id}}
 {createOrder(shop_id:5){id,shop_id}}
@@ -80,7 +81,7 @@ Here's what a query to the entire database looks like:
 ```
 https://its-a-shop.herokuapp.com/graphql?query={shop{id,name,products{id,shop_id,name,value,quantity,line_items{id,product_id,order_id,quantity}}orders{id,value,line_items{id,product_id,order_id,value}}}}
 ```
-### I didn't do a great job with naming consistency, so pay attention to the differences in the singular camelCase methods and the plural snake_case schema returns. Sorry!
+### I didn't do a great job with naming consistency (partly due to halfway conforming to the ORM's naming conventions), so pay attention to the differences in the singular camelCase methods and the plural snake_case schema returns. Sorry!
 
 Play around, and if you delete too much and don't want to painstakingly recreate data, just hit the reseed endpoint:
 ```
@@ -88,4 +89,4 @@ https://its-a-shop.herokuapp.com/reseed
 ```
 and that should reseed the data back to the defaults I've provided.
 
-Now all of this has been written for GET queries, but POST queries are also supported. However, as I have not written the GraphQL implementation well, it's not really that much of an improved experience to be sending schemas as JSON bodies through POST. Sorry again!
+Now all of this has been written for GET queries, but POST queries are also supported. However, as I have not written the GraphQL implementation well, it's not really that much of an improved experience to be sending schemas as JSON bodies through POST. Sorry about that!
