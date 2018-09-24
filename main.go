@@ -1,3 +1,7 @@
+/*
+** Entry point for the API
+ */
+
 package main
 
 import (
@@ -18,8 +22,10 @@ const (
 // Reference to our DB struct
 var db *gorm.DB
 
+// Landing page
 var serveIndex = http.FileServer(http.Dir("./static"))
 
+// Just hit this endpoint to reseed
 func reseedHandler(w http.ResponseWriter, r *http.Request) {
 	seed.DropAndReseedData(db)
 	http.Redirect(w, r, "/", 301)

@@ -1,6 +1,6 @@
 /*
 ** A demo needs sample data!
-** We include an option to reseed, if ever things get messy.
+** We include an option to reseed, if things ever get messy.
  */
 
 package seed

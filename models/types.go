@@ -1,7 +1,12 @@
+/*
+** Describes our database models, as well as graphQL schemas.
+ */
+
 package models
 
 import "github.com/graphql-go/graphql"
 
+// Database models
 type Shop struct {
 	ID       int       `json:"id"`
 	Products []Product `json:"products"`
@@ -28,6 +33,7 @@ type LineItem struct {
 	Quantity  int `json:"quantity"`
 }
 
+// Schema Object Types for graphQL
 var ShopType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "Shop",
 	Description: "Shops have Products and Orders.",
