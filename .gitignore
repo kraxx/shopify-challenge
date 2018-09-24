@@ -1,0 +1,4 @@
+# Deployment stuff
+bin
+Godeps
+vendor
