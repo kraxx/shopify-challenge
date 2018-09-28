@@ -39,6 +39,7 @@ lineItem {
   product_id
   order_id
   value
+  quantity
 }
 ```
 CRUD functionality is included:
@@ -79,7 +80,7 @@ Now, all these queries/mutations must be followed by a return schema in more cur
 ```
 Here's what a query to the entire database looks like:
 ```
-https://its-a-shop.herokuapp.com/graphql?query={shop{id,name,products{id,shop_id,name,value,quantity,line_items{id,product_id,order_id,quantity}}orders{id,value,line_items{id,product_id,order_id,value}}}}
+https://its-a-shop.herokuapp.com/graphql?query={shop{id,name,products{id,shop_id,name,value,quantity,line_items{id,product_id,order_id,quantity,value}}orders{id,value,line_items{id,product_id,order_id,quantity,value}}}}
 ```
 ### I didn't do a great job with naming consistency (partly due to halfway conforming to the ORM's naming conventions), so pay attention to the differences in the singular camelCase methods and the plural snake_case schema returns. Sorry!
 
