@@ -1,1 +1,0 @@
-web: bin/shop_api

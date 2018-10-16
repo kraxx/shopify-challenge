@@ -5,10 +5,10 @@
 package main
 
 import (
+	"./models"
+	"./seed"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
-	"github.com/kraxx/shopify-challenge/models"
-	"github.com/kraxx/shopify-challenge/seed"
 	"log"
 	"net/http"
 	"os"

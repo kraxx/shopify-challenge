@@ -1,9 +1,13 @@
-FROM alpine:3.4
+# build stage
+FROM golang:alpine AS build-env
+ADD . /src
+RUN apk add make git gcc libc-dev
+RUN cd /src && make install && make build
 
-RUN apk -U add ca-certificates
-
+# final stage
+FROM alpine
+WORKDIR /app
+COPY --from=build-env /src/bin/shop_api /app/
+COPY --from=build-env /src/db/shops.db /app/db/
 EXPOSE 8080
-
-ADD shop_api /bin/shop_api
-
-CMD ["shop_api"]
+CMD ./shop_api
